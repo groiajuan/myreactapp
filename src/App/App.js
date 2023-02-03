@@ -1,6 +1,5 @@
 import React from 'react';
 import { AppUI } from './AppUI';
-// import './App.css';
 
 // const defaultTodos = [
 //   { text: 'Cortar cebolla', completed: true },
@@ -9,23 +8,88 @@ import { AppUI } from './AppUI';
 //   { text: 'LALALALAA', completed: false },
 // ];
 
+function useLocalStorage(itemName, initialValue) {
+  const [loading,setLoading] = React.useState(true);
+  const [error,setError] = React.useState(false);
+  const [item, setItem] = React.useState(initialValue);
+
+
+  React.useEffect( () =>{
+    setTimeout( () =>
+    {
+      try 
+      {
+        const localStorageItem = localStorage.getItem(itemName);
+        let parsedItem;
+        
+        if (!localStorageItem) {
+          localStorage.setItem(itemName, JSON.stringify(initialValue));
+          parsedItem = initialValue;
+        } else {
+          parsedItem = JSON.parse(localStorageItem);
+        }
+        //para tirar un error
+        // const ad=40;
+        // ad=41;
+        setItem(parsedItem);
+        setLoading(false);
+        setError(false);
+      } catch (error) 
+      {
+        console.log('Hubo un error 2waka' + error);
+        setLoading(false);
+        setError(error);
+      }
+    }, 1000);
+  });
+
+  // const localStorageItem = localStorage.getItem(itemName);
+  // let parsedItem;
+  
+  // if (!localStorageItem) {
+  //   localStorage.setItem(itemName, JSON.stringify(initialValue));
+  //   parsedItem = initialValue;
+  // } else {
+  //   parsedItem = JSON.parse(localStorageItem);
+  // }
+
+  // const [item, setItem] = React.useState(parsedItem);
+
+  const saveItem = (newItem) => {
+    try {
+      const stringifiedItem = JSON.stringify(newItem);
+      localStorage.setItem(itemName, stringifiedItem);
+      setItem(newItem);
+    } catch (error) {
+      setLoading(false);
+      setError(error);
+    }
+    
+  };
+
+  return {
+    item,
+    saveItem,
+    loading,
+    error,
+  };
+}
+
 function App() {
+  // // Desestructuramos los datos que retornamos de nuestro custom hook, y le pasamos los argumentos que necesitamos (nombre y estado inicial)
+  // const [todos, saveTodos] = useLocalStorage('TODOS_V1', []);
 
-  const localStorageTodos = localStorage.getItem('TODOS_V1');
-  let parsedTodos;
-
-  if (!localStorageTodos) {
-    // Si el usuario es nuevo no existe un item en localStorage, por lo tanto guardamos uno con un array vacío
-    localStorage.setItem('TODOS_V1', JSON.stringify([]));
-    parsedTodos = [];
-  } else {
-    // Si existen TODOs en el localStorage los regresamos como nuestros todos
-    parsedTodos = JSON.parse(localStorageTodos);
-  }
+  // Desestructuramos los datos que retornamos de nuestro custom hook, y le pasamos los argumentos que necesitamos (nombre y estado inicial)
+  const { 
+      item: todos,
+      saveItem: saveTodos,
+      loading,
+      error
+     } = useLocalStorage('TODOS_V1', []);
 
 
 
-  const [todos, setTodos] = React.useState(parsedTodos);
+
   const [searchValue, setSearchValue] = React.useState('');
 
   const completedTodos = todos.filter(todo => !!todo.completed).length;
@@ -43,15 +107,6 @@ function App() {
     });
   }
 
-  const saveTodos = (newTodos) => {
-    // Convertimos a string nuestros TODOs
-    const stringifiedTodos = JSON.stringify(newTodos);
-    // Los guardamos en el localStorage
-    localStorage.setItem('TODOS_V1', stringifiedTodos);
-    // Actualizamos nuestro estado
-    setTodos(newTodos);
-  };
-
   const completeTodo = (text) => {
     const todoIndex = todos.findIndex(todo => todo.text === text);
     const newTodos = [...todos];
@@ -65,17 +120,37 @@ function App() {
     newTodos.splice(todoIndex, 1);
     saveTodos(newTodos);
   };
+
+  // console.log('prev effect');
+
+  // // El useEffect se utiliza para cargar datos sin tener que renderizar de nuevo el componente, una vez que se termina una tarea. Por ejemplo cuando termina llamada a API
+  // // Si mandamos en el segundo argumento un array vacio en las dependencias, solo lo hara una vez, la primera que vez que se renderize el componente.
+  // // React.useEffect(() =>
+  // // {
+  // //   console.log('use effect');
+  // // },[]);
+
+  // //En este caso dependemos del totalTodos, osea que cuando haya un cambio en esa variable volveria a renderizarse el codigo. Ejemplo: Al eliminarse o crearse uno nuevo,
+  // //pero no al modificarse
+  // React.useEffect(() =>
+  // {
+  //   console.log('use effect');
+  // },[totalTodos]);
   
+  // console.log('after effect');
+
   return (
-   <AppUI
-   totalTodos = {totalTodos}
-   completedTodos = {completedTodos}
-   searchValue ={searchValue}
-   setSearchValue = {setSearchValue}
-   searchedTodos = {searchedTodos}
-   completeTodo ={completeTodo}
-   deleteTodo={deleteTodo}
-   />
+    <AppUI
+      loading={loading}
+      error={error}
+      totalTodos={totalTodos}
+      completedTodos={completedTodos}
+      searchValue={searchValue}
+      setSearchValue={setSearchValue}
+      searchedTodos={searchedTodos}
+      completeTodo={completeTodo}
+      deleteTodo={deleteTodo}
+    />
   );
 }
 
