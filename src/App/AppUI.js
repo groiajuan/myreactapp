@@ -7,6 +7,7 @@ import { CreateTodoButton } from '../CreateTodoButton/CreateTodoButton';
 import { TodoContext } from './TodoContext/Index';
 import { Modal } from '../Modal';
 import { CloseTodoButton } from '../CloseTodoButton/CloseTodoButton';
+import { TodoForm } from '../TodoForm';
 
 function AppUI()
 {
@@ -45,7 +46,7 @@ function AppUI()
           {!!openModal && 
             (
               <Modal>
-                <p>{searchedTodos[0]?.text}</p>
+                <TodoForm></TodoForm>
                 <CloseTodoButton setOpenModal = {setOpenModal} />
               </Modal>
             )

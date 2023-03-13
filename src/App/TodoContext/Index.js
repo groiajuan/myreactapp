@@ -48,6 +48,16 @@ function TodoProvider(props)
       saveTodos(newTodos);
     };
   
+
+    const addTodo = (text) => {
+      const newTodos = [...todos];
+      newTodos.push({
+        completed: false,
+        text
+      })
+      saveTodos(newTodos);
+    };
+
     // console.log('prev effect');
   
     // // El useEffect se utiliza para cargar datos sin tener que renderizar de nuevo el componente, una vez que se termina una tarea. Por ejemplo cuando termina llamada a API
@@ -80,7 +90,8 @@ function TodoProvider(props)
         completeTodo,
         deleteTodo,
         openModal,
-        setOpenModal
+        setOpenModal,
+        addTodo
     }}>
     {props.children}
     </TodoContext.Provider>
