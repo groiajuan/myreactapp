@@ -1,19 +1,19 @@
 import React from 'react';
-import './CreateTodoButton.css';
+import './CloseTodoButton.css';
 
 // function CreateTodoButton(props) {
 //   const onClickButton = (msg) => {
 //     alert(msg);
 //   };
 
-  function CreateTodoButton(props) {
+  function CloseTodoButton(props) {
     const onClickButton = () => {
-      props.setOpenModal(true);
+      props.setOpenModal(false);
     };
   
   return (
     <button
-      className="CreateTodoButton"
+      className="CloseTodoButton"
       // onClick={() => onClickButton('Aquí se debería abrir el modal')}
        onClick={onClickButton}
     >
@@ -22,4 +22,4 @@ import './CreateTodoButton.css';
   );
 }
 
-export { CreateTodoButton };
+export { CloseTodoButton };
